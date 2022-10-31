@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
+const { users, questions } = require('./index');
 
 const userQuestions = db.define("userQuestions", {
   id: {
@@ -18,22 +19,37 @@ const userQuestions = db.define("userQuestions", {
     type: DataTypes.BOOLEAN,
     allowNull: false
   },
-  questionId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
   selectedAnswers: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+  userid: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: users,
+      key: 'id'
+    }
+  },
+  questionId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: questions,
+      key: 'id'
+    }
   },
 
   createdAt: DataTypes.DATE(now()),
   updatedAt: DataTypes.DATE(now())
 }, { underscored: true });
 
-userQuestions.beforeCreate(async (userQuestion, options) => {
-  user.selectedAnswers = JSON.stringify(userQuestion.selectedAnswers); 
+userQuestions.beforeCreate(async (userQuestion, _) => {
+  userQuestion.selectedAnswers = JSON.stringify(userQuestion.selectedAnswers); 
 });
+
+users.belongsToMany(questions, { through: userQuestions });
+questions.belongsToMany(users, { through: userQuestions });
 
 (async function() {
   await sequelize.sync().then(() => {

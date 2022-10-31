@@ -1,7 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
+const { users } = require('./index');
 
-const userSession = db.define("userSession", {
+const userSessions = db.define("userSession", {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -24,13 +25,15 @@ const userSession = db.define("userSession", {
   createdAt: DataTypes.DATE(now()),
 }, { underscored: true });
 
+users.hasMany(userSessions, { foreignKey: 'userId' });
+
 (async function() {
   await sequelize.sync().then(() => {
-      logger.info("Sync userSession Table success!");
+      logger.info("Sync userSessions Table success!");
   });
 })().catch((error) => {
-    logger.error("Sync userSession Table fail");
+    logger.error("Sync userSessions Table fail");
     logger.error(error);
 });
 
-module.exports = userSession;
+module.exports = userSessions;

@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
+const { questions } = require('./index');
 
 const answers = db.define("answers", {
   id: {
@@ -26,6 +27,9 @@ const answers = db.define("answers", {
   createdAt: DataTypes.DATE(now()),
   updatedAt: DataTypes.DATE(now())
 }, { underscored: true });
+
+questions.hasMany(answers, { foreignKey: 'questionId' });
+answers.belongsTo(questions, { foreignKey: 'questionId', targetKey: 'id' });
 
 (async function() {
   await sequelize.sync().then(() => {
