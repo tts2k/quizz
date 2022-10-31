@@ -14,9 +14,9 @@ const envVarsSchema = Joi.object()
   POSTGRESQL_PASSWORD: Joi.string().required().description('POSTGRESQL password'),
   POSTGRESQL_PORT: Joi.string().required().description('POSTGRESQL port'),
   POSTGRESQL_DB: Joi.string().required().description('POSTGRESQL Database'),
-//  JWT_SECRET: Joi.string().required().description("JWT secret key"),
-//  JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(30).description('minutes after which access token expire'),
-//  JWT_REFERSH_EXPIRATION_DAYS: Joi.number().default(30).description('days after which refresh token expire'),
+  JWT_SECRET: Joi.string().required().description("JWT secret key"),
+  JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(30).description('minutes after which access token expire'),
+  JWT_REFERSH_EXPIRATION_DAYS: Joi.number().default(30).description('days after which refresh token expire'),
 })
 .unknown();
 
@@ -44,4 +44,5 @@ module.exports = {
       useUnifiedTopology: true
     }
   },
+  tokenTypes
 }

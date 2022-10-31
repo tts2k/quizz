@@ -1,7 +1,7 @@
 const server = require('./app/app');
 const logger = require('./config/logger');
 const config = require('./config/config');
-const { sequelize } = require('./config/db');
+const sequelize = require('./config/db');
 
 sequelize
   .authenticate()
@@ -12,6 +12,7 @@ sequelize
     })
   })
   .catch(() => logger.error(`Connect DB fail ${process.env.PORT}`));
+
 
 const exitHandler = () => {
   if (server) {
