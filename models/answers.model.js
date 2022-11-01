@@ -1,8 +1,10 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
-const { questions } = require('./index');
+const questions = require('./questions.model');
+const now = require('moment');
+const logger = require('../config/logger');
 
-const answers = db.define("answers", {
+const answers = sequelize.define("answers", {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,

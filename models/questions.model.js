@@ -1,7 +1,9 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
+const now = require('moment');
+const logger = require('../config/logger');
 
-const questions = db.define("questions", {
+const questions = sequelize.define("questions", {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,

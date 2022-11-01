@@ -1,4 +1,4 @@
-const users = require('./user.model');
+const users = require('./users.model');
 const questions = require('./questions.model');
 const answers = require('./answers.model');
 const userQuestions = require('./userQuestions.model');

@@ -1,8 +1,10 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
-const { users } = require('./index');
+const users = require('./users.model');
+const now = require('moment');
+const logger = require('../config/logger');
 
-const userSessions = db.define("userSession", {
+const userSessions = sequelize.define("userSession", {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -10,7 +12,6 @@ const userSessions = db.define("userSession", {
   },
   userId: {
     type: DataTypes.INTEGER,
-    autoIncrement: true,
     allowNull: false
   },
   refershToken:{

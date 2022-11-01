@@ -1,6 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 const bcrypt = require("bcryptjs");
+const now = require('moment');
+const logger = require('../config/logger');
 
 const users = sequelize.define("users", {
   id: {
