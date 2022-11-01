@@ -1,6 +1,5 @@
 const httpStatus = require('http-status');
-const { Op, Sequelize } = require('sequelize');
-const { users, userSessions } = require('../models/index');
+const { users } = require('../models/index');
 const helper = require('../utils/users.util');
 const ApiError = require('../utils/ApiError');
 

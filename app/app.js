@@ -1,5 +1,4 @@
 const express = require('express');
-const morgan = require('morgan');
 const http = require('http');
 const httpStatus = require('http-status');
 const xss = require('xss-clean');
@@ -7,9 +6,20 @@ const helmet = require('helmet');
 const compression = require('compression');
 const ApiError = require('../utils/ApiError');
 const cors = require('cors');
+const passport = require('passport');
+const config = require('../config/config');
+const { jwtStrategy } = require('../config/passport');
+const routes = require('../routes');
+const morgan = require('../config/morgan');
 
 const app = express();
 const server = http.createServer(app);
+
+console.log('morgan.successHandler:', morgan.successHandler)
+if (config.env !== 'test') {
+  app.use(morgan.successHandler);
+  app.use(morgan.errorHandler);
+}
 
 // set security HTTP headers
 app.use(helmet());
@@ -29,6 +39,13 @@ app.use(compression());
 // enable cors
 app.use(cors());
 app.options('*', cors());
+
+// jwt authentication
+app.use(passport.initialize());
+passport.use('jwt', jwtStrategy);
+
+// api route
+app.use("/api", routes);
 
 // send back a 404 error for any unknow api request
 app.use((req, res, next) => {
