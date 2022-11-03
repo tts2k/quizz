@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const config = require('../config/config') 
-const { userSessions } = require('../models/userSessions.model');
+const { userSessions } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../constants');
 const httpStatus = require('http-status');
@@ -38,7 +38,7 @@ const saveUserSession = async ( userId, refreshToken, expires) => {
     refreshToken,
     expireTime: expires.toDate(),
   });
-  return session
+  return session;
 };
 
 /**
@@ -52,7 +52,7 @@ const verifyRefreshTokenSQL = async (refreshToken) => {
   if (!userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'userId not found');
   }
-  const session = await userSessions.findOne({ where: { userId, token: refreshToken } });
+  const session = await userSessions.findOne({ where: { userId, refreshToken: refreshToken } });
   if (!session) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Token not found');
   }
@@ -70,7 +70,6 @@ const generateAuthTokens = async (user) => {
 
   const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, 'days');
   const refreshToken = generateToken(user.id, refreshTokenExpires, tokenTypes.REFRESH);
-
   const session = await saveUserSession(user.id, refreshToken, refreshTokenExpires);
   if (!session) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Save session failed');

@@ -10,7 +10,7 @@ const users = sequelize.define("users", {
     autoIncrement: true,
     primaryKey: true
   },
-  name: {
+  username: {
     type: DataTypes.STRING,
     unique: {
       args: true,
@@ -35,6 +35,7 @@ const users = sequelize.define("users", {
   },
   isAdmin: {
     type: DataTypes.BOOLEAN,
+    defaultValue: false,
     allowNull: false
   },
 
@@ -58,7 +59,7 @@ users.isEmailTaken = async (_email) => {
 
 users.prototype.checkPassword = async (password, truePassword) => {
   return bcrypt.compare(password, truePassword);
-}
+};
 
 (async function() {
   await sequelize.sync().then(() => {

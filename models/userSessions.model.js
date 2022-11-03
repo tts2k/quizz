@@ -14,7 +14,7 @@ const userSessions = sequelize.define("userSession", {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  refershToken:{
+  refreshToken:{
     type: DataTypes.STRING,
     allowNull: false
   },

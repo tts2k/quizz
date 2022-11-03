@@ -1,5 +1,6 @@
 const httpStatus = require("http-status");
-const { userService, sessionService } = require("./index");
+const userService = require('./user.service');
+const sessionService = require('./session.service');
 const { userSessions } = require("../models");
 const ApiError = require("../utils/ApiError");
 
@@ -9,7 +10,7 @@ const ApiError = require("../utils/ApiError");
  * @param {string} password
  * @returns {Promise}
  */
-const loginUsernameAndPassword = async (email, password) => {
+const loginUsernameAndPassword = async (username, password) => {
   const user = await userService.getUserByUsername(username);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
@@ -20,7 +21,11 @@ const loginUsernameAndPassword = async (email, password) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Incorrect email or password');
   }
 
-  return user;
+  return {
+    id: user.id,
+    username: user.username,
+    email: user.email
+  };
 };
 
 /**
@@ -29,9 +34,9 @@ const loginUsernameAndPassword = async (email, password) => {
  * @returns {Promise}
  */
 const logout = async (refreshToken) => {
-  const session = await userSessions.findOne({ where: { token: refreshToken }});
+  const session = await userSessions.findOne({ where: { refreshToken: refreshToken }});
   if (!session) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Cannot find session for logout');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Cannot find session to logout');
   }
   await session.destroy();
 }
@@ -41,15 +46,17 @@ const logout = async (refreshToken) => {
  * @param {string} refreshToken
  * @returns {Promise}
  */
-const refreshToken = async (refreshToken) => {
+const refreshTokens = async (refreshToken) => {
   try {
     const session = await sessionService.verifyRefreshTokenSQL(refreshToken);
-    const user = await userService.getUserById(userSessions.userId);
+    const user = await userService.getUserById(session.userId);
     if (!user) {
       throw new ApiError(httpStatus.NOT_FOUND, 'Cannot find the user associated with this token');
     }
     await session.destroy();
+    return sessionService.generateAuthTokens(user);
   } catch (error) {
+    console.error(error);
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid session. Please login again');
   }
 }
@@ -57,5 +64,5 @@ const refreshToken = async (refreshToken) => {
 module.exports = {
   loginUsernameAndPassword,
   logout,
-  refreshToken
+  refreshTokens
 }

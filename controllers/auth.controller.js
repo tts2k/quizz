@@ -20,7 +20,7 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
-    const user = await authService.loginEmailAndPassword(username, password);
+    const user = await authService.loginUsernameAndPassword(username, password);
     const tokens = await sessionService.generateAuthTokens(user);
     res.send(response(httpStatus.OK, "Login success", { user, tokens }));
   }
@@ -46,7 +46,7 @@ const logout = async (req, res, next) => {
  */
 const refreshTokens = async (req, res, next) => {
   try {
-    const tokens = await authService.refreshToken(req.body,refreshToken);
+    const tokens = await authService.refreshTokens(req.body.refreshToken);
     res.send(response(httpStatus.OK, 'Refresh token success', { ...tokens }));
   } catch (error) {
     next(error);

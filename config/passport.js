@@ -14,7 +14,7 @@ const jwtVerify = async (payload, done) => {
       throw new Error('Invalid token type');
     }
 
-    const user = await users.findById(payload.sub);
+    const user = await users.findByPk(payload.sub);
     if (!user) {
       return done(null, false);
     }
@@ -24,7 +24,7 @@ const jwtVerify = async (payload, done) => {
   catch (error) {
     done(error, false);
   }
-} 
+}
 
 const jwtStrategy = new JwtStrategy(jwtOptions, jwtVerify);
 
