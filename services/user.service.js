@@ -9,7 +9,7 @@ const ApiError = require('../utils/ApiError');
  * @return {Promise<User>}
  */
 const createUser = async (userBody) => {
-  await helper.verifyUserBody()
+  await helper.verifyUserBody(userBody);
   return users.create({ ...userBody });
 }
 
@@ -24,7 +24,7 @@ const getUserById = async (id) => {
 * Get user by username
 */
 const getUserByUsername = async (_username) => {
-  return users.findOne({ where: { email: _email }});
+  return users.findOne({ where: { username: _username }});
 }
 
 /**
@@ -78,5 +78,10 @@ const changePasswordById = async (userId, body) => {
 }
 
 module.exports = {
-  updateUserById, deleteUserById, changePasswordById, createUser, getUserByUsername
+  updateUserById,
+  deleteUserById,
+  changePasswordById,
+  createUser,
+  getUserByUsername,
+  getUserById
 }
