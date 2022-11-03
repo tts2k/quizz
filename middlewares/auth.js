@@ -9,7 +9,7 @@ const verifyAdmin = (req, resolve, reject, requiresAdmin) => async (err, user, i
   req.user = user;
     
   if (requiresAdmin) {
-    if (user.isAdmin && req.params.userId !== user.id) {
+    if (!user.isAdmin) {
       return reject(new ApiError(httpStatus.FORBIDDEN, "Forbidden"));
     }
   }
