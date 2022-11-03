@@ -1,3 +1,7 @@
+const allowedMimeTypes = [
+    "image/png", ".image/jpeg", "image/jpeg", "image/jpg", "image/webp"
+];
+
 const tokenTypes = {
   ACCESS: 'access',
   REFRESH: 'refresh',
@@ -5,4 +9,10 @@ const tokenTypes = {
   VERIFY_EMAIL: 'VERIFY_EMAIL'
 };
 
-module.exports = { tokenTypes }
+const itemsPerPage = 10;
+
+module.exports = {
+  tokenTypes,
+  allowedMimeTypes,
+  itemsPerPage
+}
