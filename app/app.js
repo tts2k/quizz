@@ -11,6 +11,7 @@ const config = require('../config/config');
 const { jwtStrategy } = require('../config/passport');
 const routes = require('../routes');
 const morgan = require('../config/morgan');
+const { errorConverter, errorHandler } = require('../validations/error');
 
 const app = express();
 const server = http.createServer(app);
@@ -45,11 +46,17 @@ app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
 
 // api route
-app.use("/api", routes);
+app.use("/api/v1", routes);
 
 // send back a 404 error for any unknow api request
 app.use((req, res, next) => {
     next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
 });
+
+// convert error to ApiError if needed
+app.use(errorConverter);
+
+// handle error
+app.use(errorHandler);
 
 module.exports = server;
