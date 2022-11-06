@@ -1,6 +1,8 @@
 const express = require('express');
 const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
+const questionRoute = require('./question.route');
+const answerRoute = require('./answer.route');
 const swaggerRoute = require('./swagger.route');
 const config = require('../config/config');
 
@@ -14,6 +16,14 @@ const defaultRoutes = [
   {
     path: '/account',
     route: userRoute,
+  },
+  {
+    path: '/question',
+    route: questionRoute,
+  },
+  {
+    path: '/answer',
+    route: answerRoute,
   },
 ];
 

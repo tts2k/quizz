@@ -11,22 +11,7 @@ const userQuestions = sequelize.define("userQuestions", {
     autoIncrement: true,
     primaryKey: true
   },
-  answerDetail: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  image: {
-    type: DataTypes.STRING,
-  },
-  isCorrect: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false
-  },
-  selectedAnswers: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  userid: {
+  userId: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
@@ -41,6 +26,10 @@ const userQuestions = sequelize.define("userQuestions", {
       model: questions,
       key: 'id'
     }
+  },
+  selectedAnswers: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
 
   createdAt: DataTypes.DATE(now()),

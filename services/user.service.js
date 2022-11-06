@@ -1,7 +1,9 @@
 const httpStatus = require('http-status');
-const { users } = require('../models/index');
+const { users, userQuestions } = require('../models/index');
+const questionService = require('./question.service');
 const helper = require('../utils/users.util');
 const ApiError = require('../utils/ApiError');
+const sequelize = require('../config/db');
 
 /**
  * Create an user
@@ -34,8 +36,15 @@ const getUserByUsername = async (_username) => {
  * @returns {Promise<users>}
  */
 const updateUser = async (user, updateBody) => {
-  Object.assign(user, updateBody);
-  await user.save();
+  const t = sequelize.transaction();
+  try {
+    Object.assign(user, updateBody);
+    await user.save({ transaction: t });
+    t.commit();
+  } catch (error) {
+    await t.rollback();
+    throw error();
+  }
 }
 
 /**
@@ -54,6 +63,12 @@ const updateUserById = async (userId, updateBody) => {
   return user;
 };
 
+/**
+ * Delete user by pk
+ * @param {number} userId
+ * @param {Object} updateBody
+ * @returns {Promise<users>}
+ */
 const deleteUserById = async (userId) => {
   const user = await getUserById(userId);
   await user.destroy();
@@ -63,6 +78,12 @@ const deleteUserById = async (userId) => {
   return user;
 }
 
+/**
+ * Change user password by pk
+ * @param {number} userId
+ * @param {Object} updateBody
+ * @returns {Promise<users>}
+ */
 const changePasswordById = async (userId, body) => {
   const user = await getUserById(userId);
   if (!user) {
@@ -77,11 +98,38 @@ const changePasswordById = async (userId, body) => {
   return user;
 }
 
+/**
+ * Submit answer
+ * @param {number[]} answers
+ * @returns {Promise}
+ */
+const submitAnswers = async (userId, questionId, answers) => {
+  const t = await sequelize.transaction();
+  try {
+    const question = await questionService.getQuestionById(questionId);
+    if (!question) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Question doesn't exist")
+    }
+
+    await userQuestions.create({
+      userId,
+      questionId,
+      selectedAnswers: JSON.stringify(answers)
+    });
+    t.commit();
+  }
+  catch (error) {
+    await t.rollback();
+    throw error;
+  }
+}
+
 module.exports = {
   updateUserById,
   deleteUserById,
   changePasswordById,
   createUser,
   getUserByUsername,
-  getUserById
+  getUserById,
+  submitAnswers,
 }
