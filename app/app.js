@@ -12,6 +12,7 @@ const { jwtStrategy } = require('../config/passport');
 const routes = require('../routes');
 const morgan = require('../config/morgan');
 const { errorConverter, errorHandler } = require('../validations/error');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
@@ -44,6 +45,9 @@ app.options('*', cors());
 // jwt authentication
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
+
+// static path
+app.use('/', express.static(path.join(__dirname, '../public')));
 
 // api route
 app.use("/api/v1", routes);
