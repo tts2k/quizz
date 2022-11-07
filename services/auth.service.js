@@ -3,6 +3,8 @@ const userService = require('./user.service');
 const sessionService = require('./session.service');
 const { userSessions } = require("../models");
 const ApiError = require("../utils/ApiError");
+const logger = require("../config/logger");
+const redis = require("../config/redis");
 
 /**
  * Login with username and password
@@ -34,11 +36,10 @@ const loginUsernameAndPassword = async (username, password) => {
  * @returns {Promise}
  */
 const logout = async (refreshToken) => {
-  const session = await userSessions.findOne({ where: { refreshToken: refreshToken }});
-  if (!session) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Cannot find session to logout');
-  }
-  await session.destroy();
+  const userId = await sessionService.verifyRefreshTokenRedis(refreshToken);
+  console.log('userId:', userId)
+  console.log('refreshToken:', refreshToken)
+  await redis.del(userId, refreshToken);
 }
 
 /**
@@ -48,15 +49,15 @@ const logout = async (refreshToken) => {
  */
 const refreshTokens = async (refreshToken) => {
   try {
-    const session = await sessionService.verifyRefreshTokenSQL(refreshToken);
-    const user = await userService.getUserById(session.userId);
+    const userId = await sessionService.verifyRefreshTokenRedis(refreshToken);
+    const user = await userService.getUserById(userId);
     if (!user) {
       throw new ApiError(httpStatus.NOT_FOUND, 'Cannot find the user associated with this token');
     }
-    await session.destroy();
+    await redis.del(userId, refreshToken);
     return sessionService.generateAuthTokens(user);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid session. Please login again');
   }
 }

@@ -9,6 +9,8 @@ const envVarsSchema = Joi.object()
   NODE_ENV: Joi.string().valid('production', 'development', 'test').required(),
   PORT: Joi.number().default(3000),
   SQL_URL: Joi.string().required().description('SQL DB Url'),
+  REDIS_URL: Joi.string().required().description('Redis url'),
+  REDIS_KEY: Joi.string().required().description('Redis key name'),
   POSTGRESQL_HOSTNAME: Joi.string().required().description('POSTGRESQL host'),
   POSTGRESQL_USERNAME: Joi.string().required().description('POSTGRESQL username'),
   POSTGRESQL_PASSWORD: Joi.string().required().description('POSTGRESQL password'),
@@ -48,5 +50,9 @@ module.exports = {
     secret: envVars.JWT_SECRET,
     accessExpirationMinutes: envVars.JWT_ACCESS_EXPIRATION_MINUTES,
     refreshExpirationDays: envVars.JWT_REFERSH_EXPIRATION_DAYS
+  },
+  redis: {
+    url: envVars.REDIS_URL,
+    key: envVars.REDIS_KEY
   }
 }

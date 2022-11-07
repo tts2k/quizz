@@ -5,6 +5,7 @@ const { userSessions } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../constants');
 const httpStatus = require('http-status');
+const redis = require('../config/redis');
 
 /**
  * Generate token
@@ -29,7 +30,7 @@ const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
  * @param {Number} userId
  * @param {string} 
  * @param {string} type
- * @param {Moment} expireTime
+ * @param {moment} expireTime
  * @returns {Promise<userSessions>>}
  */
 const saveUserSession = async ( userId, refreshToken, expires) => {
@@ -46,18 +47,33 @@ const saveUserSession = async ( userId, refreshToken, expires) => {
  * @param {string} refreshToken
  * @returns {Promise<userSessions>}
  */
-const verifyRefreshTokenSQL = async (refreshToken) => {
+
+//const verifyRefreshTokenSQL = async (refreshToken) => {
+//  const payload = jwt.verify(refreshToken, config.jwt.secret);
+//  const userId = payload.sub;
+//  if (!userId) {
+//    throw new ApiError(httpStatus.NOT_FOUND, 'userId not found');
+//  }
+//  const session = await userSessions.findOne({ where: { userId, refreshToken: refreshToken } });
+//  if (!session) {
+//    throw new ApiError(httpStatus.NOT_FOUND, 'Token not found');
+//  }
+//  return session;
+//};
+
+
+const verifyRefreshTokenRedis = async (refreshToken) => {
   const payload = jwt.verify(refreshToken, config.jwt.secret);
   const userId = payload.sub;
   if (!userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'userId not found');
   }
-  const session = await userSessions.findOne({ where: { userId, refreshToken: refreshToken } });
+  const session = redis.get(userId, refreshToken);
   if (!session) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Token not found');
   }
-  return session;
-};
+  return userId;
+}
 
 /**
  * Generate auth tokens and save into DB
@@ -70,6 +86,9 @@ const generateAuthTokens = async (user) => {
 
   const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, 'days');
   const refreshToken = generateToken(user.id, refreshTokenExpires, tokenTypes.REFRESH);
+  console.log('refreshTokenExpires:', config.jwt.refreshExpirationDays)
+  await redis.set(user.id, refreshToken, config.jwt.refreshExpirationDays);
+
   const session = await saveUserSession(user.id, refreshToken, refreshTokenExpires);
   if (!session) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Save session failed');
@@ -90,6 +109,6 @@ const generateAuthTokens = async (user) => {
 module.exports = {
   generateToken,
   saveUserSession,
-  verifyRefreshTokenSQL,
+  verifyRefreshTokenRedis,
   generateAuthTokens,
 };

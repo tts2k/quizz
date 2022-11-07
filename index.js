@@ -7,7 +7,7 @@ sequelize
   .authenticate()
   .then(() => {
     logger.info('Connect DB success!');
-    server.listen(3000, () => {
+    server.listen(config.port, () => {
       logger.info(`Listening to port ${config.port}`)
     })
   })
@@ -33,9 +33,17 @@ const unexpectedErrorHandler = (error) => {
 process.on('uncaughtException', unexpectedErrorHandler);
 process.on('unhandledRejection', unexpectedErrorHandler);
 
-process.on('SIGTERM', () => {
+process.on('SIGTERM', async () => {
   logger.info('SIGTERM recevied');
   if (server) {
     server.close();
   }
 });
+
+process.on('SIGINT', async () => {
+  logger.info('SIGINT recevied');
+  if (server) {
+    server.close();
+  }
+});
+

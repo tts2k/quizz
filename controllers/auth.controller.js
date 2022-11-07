@@ -46,7 +46,7 @@ const logout = async (req, res, next) => {
  */
 const refreshTokens = async (req, res, next) => {
   try {
-    const tokens = await authService.refreshTokens(req.body.refreshToken);
+    const tokens = await authService.refreshTokens(req.body.refreshTokens);
     res.send(response(httpStatus.OK, 'Refresh token success', { ...tokens }));
   } catch (error) {
     next(error);
