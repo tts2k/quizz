@@ -37,8 +37,6 @@ const loginUsernameAndPassword = async (username, password) => {
  */
 const logout = async (refreshToken) => {
   const userId = await sessionService.verifyRefreshTokenRedis(refreshToken);
-  console.log('userId:', userId)
-  console.log('refreshToken:', refreshToken)
   await redis.del(userId, refreshToken);
 }
 
