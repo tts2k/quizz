@@ -86,7 +86,7 @@ const generateAuthTokens = async (user) => {
 
   const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, 'days');
   const refreshToken = generateToken(user.id, refreshTokenExpires, tokenTypes.REFRESH);
-  console.log('refreshTokenExpires:', config.jwt.refreshExpirationDays)
+
   await redis.set(user.id, refreshToken, config.jwt.refreshExpirationDays);
 
   const session = await saveUserSession(user.id, refreshToken, refreshTokenExpires);
