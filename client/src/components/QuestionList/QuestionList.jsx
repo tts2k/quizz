@@ -4,7 +4,7 @@ import { Box, Grid, Pagination, TextField, InputAdornment } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search';
 import { useSelector, useDispatch } from 'react-redux';
 import { getAllQuestions } from '../../features/question/questionAction';
-import { useSnackbar, SnackTypes } from '../../context/SnackBarContext';
+import { showSnack, SnackTypes } from '../../features/snack/snackSlice';
 
 const style = {
   pagination: {
@@ -43,7 +43,6 @@ export default function QuestionList() {
   const { questions, count, error } = useSelector(state => state.question);
   const [page, setPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState('');
-  const snack = useSnackbar();
 
   useEffect(() => {
     dispatch(getAllQuestions({ page, searchKeyword }));
@@ -51,7 +50,10 @@ export default function QuestionList() {
 
   useEffect(() => {
     if (error) {
-      snack.showSnack(SnackTypes.ERROR, error.response.data.message);
+      dispatch(showSnack({
+        type: SnackTypes.ERROR,
+        message : error.response.data.message,
+      }));
     }
   }, [error])
 
