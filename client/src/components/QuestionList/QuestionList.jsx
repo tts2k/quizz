@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Question from '../Question/Question';
 import { Box, Grid, Pagination, TextField, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import { useSelector, useDispatch } from 'react-redux';
+import { getAllQuestions } from '../../features/question/questionAction';
+import { useSnackbar, SnackTypes } from '../../context/SnackBarContext';
 
 const style = {
   pagination: {
@@ -14,15 +17,6 @@ const style = {
     margin: "50px"
   }
 }
-
-const questions = [
-  { questionDetail: "question 1", },                     
-  { questionDetail: "question 2", },                     
-  { questionDetail: "question 3", },                     
-  { questionDetail: "question 4", },                     
-  { questionDetail: "question 5", },
-  { questionDetail: "question 6", }
-]
 
 function SearchBar({ onChange }) {
   return (
@@ -45,10 +39,34 @@ function SearchBar({ onChange }) {
 }
 
 export default function QuestionList() {
+  const dispatch = useDispatch();
+  const { questions, count, error } = useSelector(state => state.question);
+  const [page, setPage] = useState(1);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const snack = useSnackbar();
+
+  useEffect(() => {
+    dispatch(getAllQuestions({ page, searchKeyword }));
+  }, [page, searchKeyword])
+
+  useEffect(() => {
+    if (error) {
+      snack.showSnack(SnackTypes.ERROR, error.response.data.message);
+    }
+  }, [error])
+
+  const changePage = (e, value) => {
+    setPage(value);
+  }
+
+  const searchQuestion = (e) => {
+    setSearchKeyword(e.target.value);
+  }
+
   return (
     <>
       <Box sx={style.searchContainer}>
-        <SearchBar />
+        <SearchBar onChange={searchQuestion}/>
       </Box>
       <Grid
         container
@@ -58,14 +76,14 @@ export default function QuestionList() {
       >
         { questions.map(e => {
           return (
-            <Grid item xs={5}>
-              <Question question={ e } />
+            <Grid item xs={5} key={e.id}>
+              <Question question={e} />
             </Grid>
           )
         }) }
       </Grid>
       <Box sx={ style.pagination }>
-          <Pagination count={10} shape="rounded" />
+          <Pagination count={Math.ceil(count / 10)} shape="rounded" onChange={changePage} />
       </Box>
     </>
   )

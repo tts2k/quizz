@@ -7,6 +7,7 @@ import {
   CardActions,
   Button
 } from '@mui/material';
+import config from '../../config/config';
 
 export default function Question(props) {
   return (
@@ -14,20 +15,17 @@ export default function Question(props) {
       <CardMedia
         component="img"
         height="140"
-        image="/static/images/to/be/added.jpg"
+        image={config.baseUrl + '/public/' + props.question.image}
         alt="question"
       />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          Question
+          Question #{props.question.id}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           { props.question.questionDetail }
         </Typography>
       </CardContent>
-      <CardActions>
-        <Button size="small">Choose</Button>
-      </CardActions>
     </Card>
   )
 }

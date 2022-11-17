@@ -11,24 +11,19 @@ const SnackTypes = {
 }
 
 const SnackbarProvider = ({ children }) => {
-  const [snack, setSnack] = useState({
+  const initialState = {
     message: '',
-    type: '',
+    type: SnackTypes.INFO,
     isOpen: false
-  })
+  } 
+  const [snack, setSnack] = useState(initialState);
 
   const showSnack = (type, message) => {
-    setSnack({
-      message: message,
-      type: type,
-      isOpen: true
-    })
+    setSnack({ message: message, type: type, isOpen: true })
   };
 
   const handleClose = () => {
-    setSnack({
-      isOpen: false,
-    })
+    setSnack(initialState);
   }
 
   return (
