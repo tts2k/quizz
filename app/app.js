@@ -24,7 +24,9 @@ if (config.env !== 'test') {
 }
 
 // set security HTTP headers
-app.use(helmet());
+if (process.env.NODE_ENV === 'production') {
+  app.use(helmet());
+}
 
 // parse json requrest body
 app.use(express.json());
@@ -46,11 +48,11 @@ app.options('*', cors());
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
 
-// static path
-app.use('/', express.static(path.join(__dirname, '../public')));
-
 // api route
 app.use("/api/v1", routes);
+
+// static path
+app.use('/public', express.static(path.join(__dirname, '../public')));
 
 // send back a 404 error for any unknow api request
 app.use((req, res, next) => {
