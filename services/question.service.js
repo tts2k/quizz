@@ -2,16 +2,24 @@ const sequelize = require("../config/db");
 const { itemsPerPage } = require("../constants");
 const { questions, answers } = require("../models")
 const answerService = require("../services/answer.service");
-
+const { Op } = require("sequelize");
 /**
  * Get all questions
  * @param {string} page
  * @returns {Promise}
  */
-const getAllQuestions = async (page) => {
+const getAllQuestions = async (page, keyword) => {
+  const offset = (page - 1) * itemsPerPage;
+  const where = (keyword && keyword !== '')
+    ? { questionDetail: {
+        [Op.like]: '%' + keyword + '%'
+      }}
+    : null;
+
   return await questions.findAndCountAll({
     limit: itemsPerPage,
-    offset: page * (page - 1) * itemsPerPage,
+    offset,
+    where
   })
 };
 

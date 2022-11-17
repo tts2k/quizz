@@ -11,7 +11,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(auth(), validate(questionValidation.getAllQuestions), questionController.getAllQuestions)
+  .get(validate(questionValidation.getAllQuestions), questionController.getAllQuestions)
   .get(auth(), validate(customValidation.autoIncrementId), questionController.getQuestion)
   .post(
     auth(true),

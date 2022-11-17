@@ -3,7 +3,8 @@ const Joi = require("joi");
 const getAllQuestions = {
   query: Joi.object().keys({
     page: Joi.number().required(),
-  })
+    keyword: Joi.string()
+  }),
 }
 
 const getQuestion = {

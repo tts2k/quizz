@@ -31,7 +31,9 @@ const getRandomQuestion = async (req, res, next) => {
 */
 const getAllQuestions = async (req, res, next) => {
   try {
-    const questions = await questionService.getAllQuestions(req.query.page);
+    const { page, keyword } = req.query;
+    const questions = await questionService.getAllQuestions(page, keyword);
+    questions.page = req.query.page;
     res.send(response(httpStatus.OK, 'Question list retrieved.', questions));
   } catch (error) {
     next(error);
@@ -46,7 +48,7 @@ const createQuestion = async (req, res, next) => {
     const { question, answers } = req.body;
 
     const image = req.files.image[0];
-    question.image = image.destination + image.filename;
+    question.image = image.filename;
 
     const createdQuestion = await questionService.createQuestion(question, answers);
     
@@ -69,7 +71,7 @@ const updateQuestion = async (req, res, next) => {
     const question = req.body;
     const image = req.files.image[0];
     if (image && image.filename !== "") {
-      question.image = image.destination + image.filename;
+      question.image = image.filename;
     }
 
     const updatedQuestion = await questionService.updateQuestionById(question.id, question);
