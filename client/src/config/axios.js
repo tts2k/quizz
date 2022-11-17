@@ -51,6 +51,8 @@ axiosInstance.interceptors.response.use(res => {
       router.navigate('/login');
     }
   }
+
+  return Promise.reject(err);
 });
 
 export default axiosInstance;
